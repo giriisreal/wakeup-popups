@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import PopupPreview from "./PopupPreview";
 
 const iconOptions = ["⚠️", "🔥", "💔", "⏰", "🚨", "💰", "🎁", "😱", "🤯", "💸", "🛑", "👀"];
@@ -22,44 +23,54 @@ const colorPresets = [
   { bg: "#0ea5e9", text: "#ffffff" },
 ];
 
-interface PopupBuilderProps {
-  onSave?: (popup: PopupData) => void;
-  initialData?: PopupData;
-}
-
-export interface PopupData {
-  id?: string;
+export interface PopupFormData {
   title: string;
   message: string;
   icon: string;
-  buttonText: string;
-  backgroundColor: string;
-  textColor: string;
+  button_text: string;
+  background_color: string;
+  text_color: string;
   animation: string;
 }
 
-const PopupBuilder = ({ onSave, initialData }: PopupBuilderProps) => {
+interface PopupBuilderProps {
+  onSave: (data: PopupFormData) => Promise<void>;
+  initialData?: PopupFormData;
+  isEditing?: boolean;
+  isSaving?: boolean;
+}
+
+const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false }: PopupBuilderProps) => {
   const [title, setTitle] = useState(initialData?.title || "");
   const [message, setMessage] = useState(initialData?.message || "");
   const [icon, setIcon] = useState(initialData?.icon || "⚠️");
-  const [buttonText, setButtonText] = useState(initialData?.buttonText || "Take Action");
-  const [backgroundColor, setBackgroundColor] = useState(initialData?.backgroundColor || "#1e293b");
-  const [textColor, setTextColor] = useState(initialData?.textColor || "#f8fafc");
+  const [buttonText, setButtonText] = useState(initialData?.button_text || "Take Action");
+  const [backgroundColor, setBackgroundColor] = useState(initialData?.background_color || "#1e293b");
+  const [textColor, setTextColor] = useState(initialData?.text_color || "#f8fafc");
   const [animation, setAnimation] = useState(initialData?.animation || "none");
 
-  const handleSave = () => {
-    if (onSave) {
-      onSave({
-        id: initialData?.id || crypto.randomUUID(),
-        title,
-        message,
-        icon,
-        buttonText,
-        backgroundColor,
-        textColor,
-        animation,
-      });
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setMessage(initialData.message);
+      setIcon(initialData.icon);
+      setButtonText(initialData.button_text);
+      setBackgroundColor(initialData.background_color);
+      setTextColor(initialData.text_color);
+      setAnimation(initialData.animation);
     }
+  }, [initialData]);
+
+  const handleSave = async () => {
+    await onSave({
+      title,
+      message,
+      icon,
+      button_text: buttonText,
+      background_color: backgroundColor,
+      text_color: textColor,
+      animation,
+    });
   };
 
   return (
@@ -159,8 +170,15 @@ const PopupBuilder = ({ onSave, initialData }: PopupBuilderProps) => {
           </div>
         </div>
 
-        <Button onClick={handleSave} variant="default" size="lg" className="w-full">
-          Save Popup
+        <Button onClick={handleSave} variant="default" size="lg" className="w-full" disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              Saving...
+            </>
+          ) : (
+            isEditing ? "Update Popup" : "Save Popup"
+          )}
         </Button>
       </div>
 

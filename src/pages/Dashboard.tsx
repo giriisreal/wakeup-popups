@@ -1,83 +1,48 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Copy, Pencil, Trash2, BarChart3 } from "lucide-react";
+import { Plus, Copy, Pencil, Trash2, BarChart3, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-
-interface Popup {
-  id: string;
-  title: string;
-  icon: string;
-  active: boolean;
-  views: number;
-  clicks: number;
-}
-
-const mockPopups: Popup[] = [
-  {
-    id: "1",
-    title: "Exit Intent Offer",
-    icon: "⚠️",
-    active: true,
-    views: 1250,
-    clicks: 312,
-  },
-  {
-    id: "2",
-    title: "Flash Sale Alert",
-    icon: "🔥",
-    active: false,
-    views: 890,
-    clicks: 156,
-  },
-  {
-    id: "3",
-    title: "Newsletter Signup",
-    icon: "💌",
-    active: true,
-    views: 2100,
-    clicks: 420,
-  },
-];
+import { usePopups } from "@/hooks/usePopups";
 
 const Dashboard = () => {
-  const [popups, setPopups] = useState<Popup[]>(mockPopups);
+  const { popups, loading, updatePopup, deletePopup, duplicatePopup } = usePopups();
 
-  const toggleActive = (id: string) => {
-    setPopups(popups.map(p => 
-      p.id === id ? { ...p, active: !p.active } : p
-    ));
-    toast({
-      title: "Status updated",
-      description: "Popup status has been changed.",
-    });
+  const toggleActive = async (id: string, currentActive: boolean) => {
+    const success = await updatePopup(id, { active: !currentActive });
+    if (success) {
+      toast({
+        title: "Status updated",
+        description: `Popup is now ${!currentActive ? "active" : "inactive"}.`,
+      });
+    }
   };
 
-  const deletePopup = (id: string) => {
-    setPopups(popups.filter(p => p.id !== id));
-    toast({
-      title: "Popup deleted",
-      description: "The popup has been removed.",
-    });
+  const handleDelete = async (id: string) => {
+    const success = await deletePopup(id);
+    if (success) {
+      toast({
+        title: "Popup deleted",
+        description: "The popup has been removed.",
+      });
+    }
   };
 
-  const duplicatePopup = (popup: Popup) => {
-    const newPopup = {
-      ...popup,
-      id: crypto.randomUUID(),
-      title: `${popup.title} (Copy)`,
-      views: 0,
-      clicks: 0,
-    };
-    setPopups([...popups, newPopup]);
-    toast({
-      title: "Popup duplicated",
-      description: "A copy has been created.",
-    });
+  const handleDuplicate = async (popup: typeof popups[0]) => {
+    const newPopup = await duplicatePopup(popup);
+    if (newPopup) {
+      toast({
+        title: "Popup duplicated",
+        description: "A copy has been created.",
+      });
+    }
   };
+
+  const totalViews = popups.reduce((acc, p) => acc + p.views, 0);
+  const totalClicks = popups.reduce((acc, p) => acc + p.clicks, 0);
+  const conversionRate = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(1) : "0.0";
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,21 +67,21 @@ const Dashboard = () => {
             <div className="bg-card rounded-2xl p-6 border border-border">
               <div className="text-3xl mb-2">👀</div>
               <div className="text-3xl font-bold text-foreground">
-                {popups.reduce((acc, p) => acc + p.views, 0).toLocaleString()}
+                {totalViews.toLocaleString()}
               </div>
               <div className="text-muted-foreground">Total Views</div>
             </div>
             <div className="bg-card rounded-2xl p-6 border border-border">
               <div className="text-3xl mb-2">🖱️</div>
               <div className="text-3xl font-bold text-foreground">
-                {popups.reduce((acc, p) => acc + p.clicks, 0).toLocaleString()}
+                {totalClicks.toLocaleString()}
               </div>
               <div className="text-muted-foreground">Total Clicks</div>
             </div>
             <div className="bg-card rounded-2xl p-6 border border-border">
               <div className="text-3xl mb-2">📈</div>
               <div className="text-3xl font-bold text-gradient">
-                {((popups.reduce((acc, p) => acc + p.clicks, 0) / popups.reduce((acc, p) => acc + p.views, 0)) * 100).toFixed(1)}%
+                {conversionRate}%
               </div>
               <div className="text-muted-foreground">Conversion Rate</div>
             </div>
@@ -127,8 +92,13 @@ const Dashboard = () => {
             <div className="p-6 border-b border-border">
               <h2 className="text-xl font-bold text-foreground">Your Popups</h2>
             </div>
-            
-            {popups.length === 0 ? (
+
+            {loading ? (
+              <div className="p-12 text-center">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-muted-foreground">Loading your popups...</p>
+              </div>
+            ) : popups.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="text-6xl mb-4">💩</div>
                 <h3 className="text-xl font-bold text-foreground mb-2">No popups yet</h3>
@@ -146,7 +116,9 @@ const Dashboard = () => {
                         {popup.icon}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-foreground">{popup.title}</h3>
+                        <h3 className="font-semibold text-foreground">
+                          {popup.title || "Untitled Popup"}
+                        </h3>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <BarChart3 className="w-3 h-3" />
@@ -164,14 +136,14 @@ const Dashboard = () => {
                         </span>
                         <Switch
                           checked={popup.active}
-                          onCheckedChange={() => toggleActive(popup.id)}
+                          onCheckedChange={() => toggleActive(popup.id, popup.active)}
                         />
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => duplicatePopup(popup)}
+                          onClick={() => handleDuplicate(popup)}
                           title="Duplicate"
                         >
                           <Copy className="w-4 h-4" />
@@ -184,7 +156,7 @@ const Dashboard = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => deletePopup(popup.id)}
+                          onClick={() => handleDelete(popup.id)}
                           title="Delete"
                           className="text-destructive hover:text-destructive"
                         >

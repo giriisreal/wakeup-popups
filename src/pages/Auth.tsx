@@ -1,35 +1,117 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Mail, Lock, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { ArrowLeft, Mail, Lock, User, Loader2 } from "lucide-react";
+import { z } from "zod";
+
+const authSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  name: z.string().min(1, "Name is required").optional(),
+});
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
   const navigate = useNavigate();
+  const { user, signIn, signUp } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
+  const validateForm = () => {
+    try {
+      const data = isLogin 
+        ? { email, password }
+        : { email, password, name };
+      authSchema.parse(data);
+      setErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        err.errors.forEach((e) => {
+          if (e.path[0]) {
+            newErrors[e.path[0] as string] = e.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Mock auth - in production, this would connect to Supabase
-    if (isLogin) {
-      toast({
-        title: "Welcome back! 🎉",
-        description: "You've been logged in successfully.",
-      });
-    } else {
-      toast({
-        title: "Account created! 🎉",
-        description: "Welcome to PoopUp!",
-      });
-    }
+    if (!validateForm()) return;
     
-    navigate("/dashboard");
+    setIsSubmitting(true);
+    
+    try {
+      if (isLogin) {
+        const { error } = await signIn(email, password);
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            toast({
+              title: "Login failed",
+              description: "Invalid email or password. Please try again.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Login failed",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+          return;
+        }
+        toast({
+          title: "Welcome back! 🎉",
+          description: "You've been logged in successfully.",
+        });
+        navigate("/dashboard");
+      } else {
+        const { error } = await signUp(email, password, name);
+        if (error) {
+          if (error.message.includes("already registered")) {
+            toast({
+              title: "Account exists",
+              description: "An account with this email already exists. Try logging in instead.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Sign up failed",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+          return;
+        }
+        toast({
+          title: "Account created! 🎉",
+          description: "Welcome to PoopUp!",
+        });
+        navigate("/dashboard");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -72,9 +154,9 @@ const Auth = () => {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="John Doe"
                     className="pl-10"
-                    required
                   />
                 </div>
+                {errors.name && <p className="text-destructive text-sm mt-1">{errors.name}</p>}
               </div>
             )}
 
@@ -89,9 +171,9 @@ const Auth = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className="pl-10"
-                  required
                 />
               </div>
+              {errors.email && <p className="text-destructive text-sm mt-1">{errors.email}</p>}
             </div>
 
             <div>
@@ -105,19 +187,29 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="pl-10"
-                  required
                 />
               </div>
+              {errors.password && <p className="text-destructive text-sm mt-1">{errors.password}</p>}
             </div>
 
-            <Button type="submit" variant="default" size="lg" className="w-full">
-              {isLogin ? "Log in" : "Create account"}
+            <Button type="submit" variant="default" size="lg" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  {isLogin ? "Logging in..." : "Creating account..."}
+                </>
+              ) : (
+                isLogin ? "Log in" : "Create account"
+              )}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <button
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setErrors({});
+              }}
               className="text-muted-foreground hover:text-primary transition-colors"
             >
               {isLogin
