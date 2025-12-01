@@ -35,6 +35,10 @@ const Create = () => {
           background_color: popup.background_color,
           text_color: popup.text_color,
           animation: popup.animation,
+          image_url: popup.image_url,
+          start_delay: popup.start_delay,
+          message_interval: popup.message_interval,
+          hide_after: popup.hide_after,
         });
         setIsEditing(true);
         setSavedPopupId(popup.id);

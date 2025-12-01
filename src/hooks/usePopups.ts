@@ -18,6 +18,11 @@ export interface Popup {
   clicks: number;
   created_at: string;
   updated_at: string;
+  image_url?: string;
+  start_delay: number;
+  message_interval: number;
+  hide_after: number;
+  position: string;
 }
 
 export interface PopupFormData {
@@ -28,6 +33,10 @@ export interface PopupFormData {
   background_color: string;
   text_color: string;
   animation: string;
+  image_url?: string;
+  start_delay: number;
+  message_interval: number;
+  hide_after: number;
 }
 
 export const usePopups = () => {
@@ -81,6 +90,10 @@ export const usePopups = () => {
           background_color: data.background_color,
           text_color: data.text_color,
           animation: data.animation,
+          image_url: data.image_url,
+          start_delay: data.start_delay,
+          message_interval: data.message_interval,
+          hide_after: data.hide_after,
         })
         .select()
         .single();
@@ -152,6 +165,10 @@ export const usePopups = () => {
       background_color: popup.background_color,
       text_color: popup.text_color,
       animation: popup.animation,
+      image_url: popup.image_url,
+      start_delay: popup.start_delay,
+      message_interval: popup.message_interval,
+      hide_after: popup.hide_after,
     });
   };
 

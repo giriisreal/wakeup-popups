@@ -22,9 +22,14 @@ export type Database = {
           button_text: string
           clicks: number
           created_at: string
+          hide_after: number
           icon: string
           id: string
+          image_url: string | null
           message: string
+          message_interval: number
+          position: string
+          start_delay: number
           text_color: string
           title: string
           updated_at: string
@@ -38,9 +43,14 @@ export type Database = {
           button_text?: string
           clicks?: number
           created_at?: string
+          hide_after?: number
           icon?: string
           id?: string
+          image_url?: string | null
           message?: string
+          message_interval?: number
+          position?: string
+          start_delay?: number
           text_color?: string
           title?: string
           updated_at?: string
@@ -54,9 +64,14 @@ export type Database = {
           button_text?: string
           clicks?: number
           created_at?: string
+          hide_after?: number
           icon?: string
           id?: string
+          image_url?: string | null
           message?: string
+          message_interval?: number
+          position?: string
+          start_delay?: number
           text_color?: string
           title?: string
           updated_at?: string
