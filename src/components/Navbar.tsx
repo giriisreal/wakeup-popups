@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, LogOut, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 
@@ -16,24 +16,22 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span className="text-xl">💩</span>
-          </div>
+          <span className="text-2xl">💩</span>
           <span className="text-xl font-bold text-foreground">PoopUp</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
             Pricing
           </Link>
-          <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
             FAQ
           </Link>
           {user && (
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
               Dashboard
             </Link>
           )}
@@ -53,8 +51,7 @@ const Navbar = () => {
                 Sign out
               </Button>
               <Link to="/create">
-                <Button variant="default" size="sm" className="gap-2">
-                  <Zap className="w-4 h-4" />
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-4">
                   Create Popup
                 </Button>
               </Link>
@@ -67,8 +64,7 @@ const Navbar = () => {
                 </Button>
               </Link>
               <Link to="/create">
-                <Button variant="default" size="sm" className="gap-2">
-                  <Zap className="w-4 h-4" />
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-4">
                   Create Popup
                 </Button>
               </Link>
