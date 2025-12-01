@@ -9,8 +9,8 @@ const HeroSection = () => {
         <div className="text-center max-w-4xl mx-auto">
           {/* Small label */}
           <p className="text-muted-foreground mb-4 animate-slide-up">
-            Poppy in action
-            <span className="inline-block ml-2">👆</span>
+            
+            <span className="inline-block ml-2"></span>
           </p>
 
           {/* Main headline */}
@@ -60,14 +60,14 @@ const HeroSection = () => {
             <div className="inline-flex items-center gap-3 bg-secondary text-secondary-foreground rounded-full px-5 py-3">
               <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" 
+                  src="https://robohash.org/stefan-one" 
                   alt="Testimonial"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-sm">This is so clever 👏</p>
-                <p className="text-xs opacity-80">Guillermo R. — Vercel CEO</p>
+                <p className="font-semibold text-sm">This is so amazing</p>
+                <p className="text-xs opacity-80">Reuben, Linkedin</p>
               </div>
             </div>
           </div>

@@ -105,7 +105,7 @@ const Auth = () => {
         }
         toast({
           title: "Account created! 🎉",
-          description: "Welcome to PoopUp!",
+          description: "Welcome to Poppy!",
         });
         navigate("/dashboard");
       }
@@ -129,7 +129,7 @@ const Auth = () => {
               <div className="w-10 h-10 rounded-xl bg-gradient-hero flex items-center justify-center">
                 <span className="text-xl">💩</span>
               </div>
-              <span className="text-xl font-bold text-foreground">PoopUp</span>
+              <span className="text-xl font-bold text-foreground">Poppy</span>
             </Link>
             <h1 className="text-3xl font-bold text-foreground mb-2">
               {isLogin ? "Welcome back!" : "Create your account"}
@@ -233,7 +233,7 @@ const Auth = () => {
               Boost your conversions
             </h2>
             <p className="text-muted-foreground max-w-xs">
-              Join thousands of website owners using PoopUp to turn visitors into paying customers.
+              Join thousands of website owners using Poppy to turn visitors into paying customers.
             </p>
           </div>
         </div>

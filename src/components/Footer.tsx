@@ -45,7 +45,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@poopup.co" className="opacity-80 hover:opacity-100 transition-opacity">
+                <a href="mailto: iamgirikrishna@gmail.com" className="opacity-80 hover:opacity-100 transition-opacity">
                   Contact
                 </a>
               </li>

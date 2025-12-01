@@ -100,7 +100,7 @@ const Dashboard = () => {
               </div>
             ) : popups.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="text-6xl mb-4">💩</div>
+                <div className="text-6xl mb-4">🎉</div>
                 <h3 className="text-xl font-bold text-foreground mb-2">No popups yet</h3>
                 <p className="text-muted-foreground mb-6">Create your first wake-up call popup</p>
                 <Link to="/create">

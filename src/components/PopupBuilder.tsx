@@ -113,7 +113,7 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
           
           <div className="space-y-5">
             <div>
-              <Label className="text-sm text-muted-foreground">Start PoopUp after (ms)</Label>
+              <Label className="text-sm text-muted-foreground">Start Poppy after (ms)</Label>
               <Input
                 type="number"
                 value={startDelay}

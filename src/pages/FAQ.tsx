@@ -14,11 +14,11 @@ const faqs = [
   },
   {
     question: "Do I need to know how to code?",
-    answer: "Nope! That's the whole point of PoopUp. You just copy one line of code and paste it into your website. If you can copy and paste, you can use PoopUp.",
+    answer: "Nope! That's the whole point of Poppy. You just copy one line of code and paste it into your website. If you can copy and paste, you can use Poppy.",
   },
   {
     question: "Can I use this with Shopify, Wix, WordPress, etc.?",
-    answer: "Yes! PoopUp works with any website builder or platform. As long as you can add a script tag to your site's header, you're good to go. This includes Shopify, Wix, WordPress, Squarespace, Webflow, and plain HTML sites.",
+    answer: "Yes! Poppy works with any website builder or platform. As long as you can add a script tag to your site's header, you're good to go. This includes Shopify, Wix, WordPress, Squarespace, Webflow, and plain HTML sites.",
   },
   {
     question: "How do I install the popup on my site?",
@@ -38,11 +38,11 @@ const faqs = [
   },
   {
     question: "Is there a free trial?",
-    answer: "We don't offer a free trial, but we do have a 30-day money-back guarantee. If you're not happy with PoopUp for any reason, just reach out and we'll refund you - no questions asked.",
+    answer: "We don't offer a free trial, but we do have a 30-day money-back guarantee. If you're not happy with Poppy for any reason, just reach out and we'll refund you - no questions asked.",
   },
   {
     question: "Do you offer refunds?",
-    answer: "Yes! We offer a 30-day money-back guarantee. If PoopUp isn't working out for you, just email us and we'll process your refund promptly.",
+    answer: "Yes! We offer a 30-day money-back guarantee. If Poppy isn't working out for you, just email us and we'll process your refund promptly.",
   },
   {
     question: "Can I see analytics for my popups?",
@@ -92,7 +92,7 @@ const FAQ = () => {
               <p className="text-muted-foreground mb-6">
                 Can't find what you're looking for? Drop us a message and we'll get back to you.
               </p>
-              <a href="mailto:support@poopup.co">
+              <a href="mailto:iamgirikrishna@gmail.com">
                 <button className="bg-gradient-hero text-primary-foreground font-semibold px-6 py-3 rounded-xl hover:brightness-110 transition-all">
                   Contact Support
                 </button>
