@@ -24,17 +24,9 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-            Pricing
-          </Link>
           <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
             FAQ
           </Link>
-          {user && (
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-              Dashboard
-            </Link>
-          )}
         </div>
 
         <div className="flex items-center gap-3">
