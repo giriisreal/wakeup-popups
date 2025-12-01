@@ -10,7 +10,8 @@ interface EmbedSnippetProps {
 const EmbedSnippet = ({ popupId }: EmbedSnippetProps) => {
   const [copied, setCopied] = useState(false);
 
-  const snippet = `<script src="https://cdn.poopup.co/${popupId}.js" async></script>`;
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const snippet = `<script src="${supabaseUrl}/functions/v1/popup-embed?id=${popupId}" async></script>`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(snippet);
