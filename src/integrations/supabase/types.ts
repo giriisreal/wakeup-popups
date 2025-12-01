@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      popups: {
+        Row: {
+          active: boolean
+          animation: string
+          background_color: string
+          button_text: string
+          clicks: number
+          created_at: string
+          icon: string
+          id: string
+          message: string
+          text_color: string
+          title: string
+          updated_at: string
+          user_id: string
+          views: number
+        }
+        Insert: {
+          active?: boolean
+          animation?: string
+          background_color?: string
+          button_text?: string
+          clicks?: number
+          created_at?: string
+          icon?: string
+          id?: string
+          message?: string
+          text_color?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+          views?: number
+        }
+        Update: {
+          active?: boolean
+          animation?: string
+          background_color?: string
+          button_text?: string
+          clicks?: number
+          created_at?: string
+          icon?: string
+          id?: string
+          message?: string
+          text_color?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
