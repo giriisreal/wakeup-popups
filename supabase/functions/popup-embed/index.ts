@@ -47,6 +47,7 @@ Deno.serve(async (req) => {
 
   const startDelay = popup.start_delay || 500;
   const hideAfter = popup.hide_after || 200000;
+  const messageInterval = popup.message_interval || 0;
 
   const script = `
 (function() {
@@ -56,8 +57,13 @@ Deno.serve(async (req) => {
   var popup = ${JSON.stringify(popup)};
   var startDelay = ${startDelay};
   var hideAfter = ${hideAfter};
+  var messageInterval = ${messageInterval};
+  var isVisible = false;
   
   function showPopup() {
+    if (isVisible) return;
+    isVisible = true;
+    
     var container = document.createElement('div');
     container.id = 'poopup-container-${popupId}';
     container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:999999;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);';
@@ -106,11 +112,18 @@ Deno.serve(async (req) => {
     card.appendChild(content);
     container.appendChild(card);
     
+    function hidePopup() {
+      container.style.transform = 'translateX(120%)';
+      setTimeout(function() { 
+        if (container.parentNode) container.remove(); 
+        isVisible = false;
+      }, 400);
+    }
+    
     // Close on click
     card.onclick = function() {
       fetch('${Deno.env.get('SUPABASE_URL')}/functions/v1/popup-click?id=${popupId}', { method: 'POST' });
-      container.style.transform = 'translateX(120%)';
-      setTimeout(function() { container.remove(); }, 400);
+      hidePopup();
     };
     
     document.body.appendChild(container);
@@ -123,14 +136,18 @@ Deno.serve(async (req) => {
     // Auto hide
     setTimeout(function() {
       if (container.parentNode) {
-        container.style.transform = 'translateX(120%)';
-        setTimeout(function() { container.remove(); }, 400);
+        hidePopup();
       }
     }, hideAfter);
   }
   
-  // Start after delay
+  // Start after initial delay
   setTimeout(showPopup, startDelay);
+  
+  // Repeat at interval if set
+  if (messageInterval > 0) {
+    setInterval(showPopup, messageInterval);
+  }
 })();
 `;
 
