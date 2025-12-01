@@ -7,8 +7,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">💩</span>
-              <span className="text-xl font-bold">PoopUp</span>
+              <span className="text-2xl">🎉</span>
+              <span className="text-xl font-bold">Poppy</span>
             </Link>
             <p className="opacity-80 max-w-sm">
               Turn your boring website visitors into paying customers with wake-up call popups that actually convert.
@@ -54,7 +54,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-secondary-foreground/20 mt-8 pt-8 text-center opacity-80 text-sm">
-          <p>© {new Date().getFullYear()} PoopUp. Made with 💩 and ❤️</p>
+          <p>© {new Date().getFullYear()} Poppy. Made with 🎉 and ❤️</p>
         </div>
       </div>
     </footer>

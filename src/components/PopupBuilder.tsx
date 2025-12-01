@@ -209,10 +209,10 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
           {/* Add Message Button */}
           <Button
             variant="default"
-            className="w-full mt-4 rounded-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+            className="w-full mt-4 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Message
+            Add Message
           </Button>
         </div>
 
