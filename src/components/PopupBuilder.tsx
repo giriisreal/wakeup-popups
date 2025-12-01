@@ -1,27 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Camera, Trash2, GripVertical, Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import PopupPreview from "./PopupPreview";
-
-const iconOptions = ["⚠️", "🔥", "💔", "⏰", "🚨", "💰", "🎁", "😱", "🤯", "💸", "🛑", "👀"];
-const animationOptions = [
-  { value: "none", label: "None" },
-  { value: "bounce", label: "Bounce" },
-  { value: "shake", label: "Shake" },
-  { value: "float", label: "Float" },
-];
-
-const colorPresets = [
-  { bg: "#1e293b", text: "#f8fafc" },
-  { bg: "#f59e0b", text: "#1e293b" },
-  { bg: "#dc2626", text: "#ffffff" },
-  { bg: "#059669", text: "#ffffff" },
-  { bg: "#7c3aed", text: "#ffffff" },
-  { bg: "#0ea5e9", text: "#ffffff" },
-];
 
 export interface PopupFormData {
   title: string;
@@ -31,6 +16,10 @@ export interface PopupFormData {
   background_color: string;
   text_color: string;
   animation: string;
+  image_url?: string;
+  start_delay: number;
+  message_interval: number;
+  hide_after: number;
 }
 
 interface PopupBuilderProps {
@@ -41,160 +30,218 @@ interface PopupBuilderProps {
 }
 
 const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false }: PopupBuilderProps) => {
+  const { user } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [title, setTitle] = useState(initialData?.title || "");
   const [message, setMessage] = useState(initialData?.message || "");
-  const [icon, setIcon] = useState(initialData?.icon || "⚠️");
-  const [buttonText, setButtonText] = useState(initialData?.button_text || "Take Action");
-  const [backgroundColor, setBackgroundColor] = useState(initialData?.background_color || "#1e293b");
-  const [textColor, setTextColor] = useState(initialData?.text_color || "#f8fafc");
-  const [animation, setAnimation] = useState(initialData?.animation || "none");
+  const [imageUrl, setImageUrl] = useState(initialData?.image_url || "");
+  const [startDelay, setStartDelay] = useState(initialData?.start_delay || 500);
+  const [messageInterval, setMessageInterval] = useState(initialData?.message_interval || 1000);
+  const [hideAfter, setHideAfter] = useState(initialData?.hide_after || 200000);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
       setMessage(initialData.message);
-      setIcon(initialData.icon);
-      setButtonText(initialData.button_text);
-      setBackgroundColor(initialData.background_color);
-      setTextColor(initialData.text_color);
-      setAnimation(initialData.animation);
+      setImageUrl(initialData.image_url || "");
+      setStartDelay(initialData.start_delay || 500);
+      setMessageInterval(initialData.message_interval || 1000);
+      setHideAfter(initialData.hide_after || 200000);
     }
   }, [initialData]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('popup-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('popup-images')
+        .getPublicUrl(fileName);
+
+      setImageUrl(publicUrl);
+      toast({
+        title: "Image uploaded!",
+        description: "Your image has been uploaded successfully.",
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     await onSave({
       title,
       message,
-      icon,
-      button_text: buttonText,
-      background_color: backgroundColor,
-      text_color: textColor,
-      animation,
+      icon: "📢",
+      button_text: "Close",
+      background_color: "#f5f0e8",
+      text_color: "#1a1a1a",
+      animation: "slide",
+      image_url: imageUrl,
+      start_delay: startDelay,
+      message_interval: messageInterval,
+      hide_after: hideAfter,
     });
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
-      {/* Builder Form */}
-      <div className="space-y-6">
-        <div>
-          <Label htmlFor="title" className="text-foreground">Popup Title</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Wait! Before you go..."
-            className="mt-2"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="message" className="text-foreground">Message</Label>
-          <Textarea
-            id="message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="93% of visitors never return. Don't be a statistic."
-            className="mt-2"
-            rows={3}
-          />
-        </div>
-
-        <div>
-          <Label className="text-foreground">Icon</Label>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {iconOptions.map((emoji) => (
-              <button
-                key={emoji}
-                onClick={() => setIcon(emoji)}
-                className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center border-2 transition-all ${
-                  icon === emoji
-                    ? "border-primary bg-primary/20"
-                    : "border-border bg-card hover:border-primary/50"
-                }`}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="buttonText" className="text-foreground">Button Text</Label>
-          <Input
-            id="buttonText"
-            value={buttonText}
-            onChange={(e) => setButtonText(e.target.value)}
-            placeholder="Claim My Discount"
-            className="mt-2"
-          />
-        </div>
-
-        <div>
-          <Label className="text-foreground">Color Preset</Label>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {colorPresets.map((preset, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setBackgroundColor(preset.bg);
-                  setTextColor(preset.text);
-                }}
-                className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                  backgroundColor === preset.bg
-                    ? "border-primary scale-110"
-                    : "border-transparent hover:scale-105"
-                }`}
-                style={{ backgroundColor: preset.bg }}
+    <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+      {/* Settings Panel */}
+      <div className="space-y-8">
+        <div className="bg-[#faf8f5] rounded-3xl p-6 border border-[#e5ddd0]">
+          <h3 className="font-semibold text-[#1a1a1a] mb-6">Timing Settings</h3>
+          
+          <div className="space-y-5">
+            <div>
+              <Label className="text-sm text-[#6b6560]">Start PoopUp after (ms)</Label>
+              <Input
+                type="number"
+                value={startDelay}
+                onChange={(e) => setStartDelay(Number(e.target.value))}
+                className="mt-2 bg-white border-[#e5ddd0] rounded-xl"
               />
-            ))}
+            </div>
+
+            <div>
+              <Label className="text-sm text-[#6b6560]">Send message every (ms)</Label>
+              <Input
+                type="number"
+                value={messageInterval}
+                onChange={(e) => setMessageInterval(Number(e.target.value))}
+                className="mt-2 bg-white border-[#e5ddd0] rounded-xl"
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm text-[#6b6560]">Hide message after (ms)</Label>
+              <Input
+                type="number"
+                value={hideAfter}
+                onChange={(e) => setHideAfter(Number(e.target.value))}
+                className="mt-2 bg-white border-[#e5ddd0] rounded-xl"
+              />
+            </div>
           </div>
         </div>
+      </div>
 
-        <div>
-          <Label className="text-foreground">Animation</Label>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {animationOptions.map((anim) => (
-              <button
-                key={anim.value}
-                onClick={() => setAnimation(anim.value)}
-                className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                  animation === anim.value
-                    ? "border-primary bg-primary/20 text-foreground"
-                    : "border-border bg-card text-muted-foreground hover:border-primary/50"
-                }`}
+      {/* Message Builder */}
+      <div className="space-y-6">
+        <div className="bg-[#faf8f5] rounded-3xl p-6 border border-[#e5ddd0] border-dashed">
+          {/* Message Card */}
+          <div className="bg-white rounded-2xl p-4 border border-[#e5ddd0] shadow-sm">
+            <div className="flex items-start gap-3">
+              {/* Drag Handle */}
+              <div className="text-[#c5c0b8] cursor-grab">
+                <GripVertical className="w-5 h-5" />
+              </div>
+
+              {/* Image Upload */}
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-14 h-14 rounded-xl bg-[#f5f0e8] border-2 border-dashed border-[#d5d0c8] flex items-center justify-center cursor-pointer hover:border-primary transition-colors flex-shrink-0"
               >
-                {anim.label}
+                {isUploading ? (
+                  <Loader2 className="w-5 h-5 animate-spin text-[#8b8680]" />
+                ) : imageUrl ? (
+                  <img src={imageUrl} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                ) : (
+                  <Camera className="w-5 h-5 text-[#8b8680]" />
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+
+              {/* Title & Message Inputs */}
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Angry Customer"
+                    className="border-[#e5ddd0] rounded-full bg-[#faf8f5] text-sm font-medium"
+                  />
+                  <span className="text-xs text-[#8b8680] flex-shrink-0 px-2">now</span>
+                </div>
+                <Input
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="WHERE IS MY INVOICE?!"
+                  className="border-[#e5ddd0] rounded-full bg-[#faf8f5] text-sm uppercase tracking-wide"
+                />
+              </div>
+            </div>
+
+            {/* Delete Button */}
+            <div className="flex justify-end mt-3">
+              <button className="flex items-center gap-1.5 text-sm text-[#6b6560] hover:text-red-500 transition-colors">
+                <Trash2 className="w-4 h-4" />
+                Delete
               </button>
-            ))}
+            </div>
           </div>
+
+          {/* Add Message Button */}
+          <Button
+            variant="default"
+            className="w-full mt-4 rounded-full bg-[#8b6b4a] hover:bg-[#7a5d40] text-white"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Message
+          </Button>
         </div>
 
-        <Button onClick={handleSave} variant="default" size="lg" className="w-full" disabled={isSaving}>
+        {/* Update Button */}
+        <Button 
+          onClick={handleSave} 
+          disabled={isSaving}
+          className="w-full rounded-full bg-[#f59e0b] hover:bg-[#e89009] text-[#1a1a1a] font-semibold py-6"
+        >
           {isSaving ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin mr-2" />
               Saving...
             </>
           ) : (
-            isEditing ? "Update Popup" : "Save Popup"
+            isEditing ? "Update" : "Create Popup"
           )}
         </Button>
-      </div>
 
-      {/* Live Preview */}
-      <div className="lg:sticky lg:top-24">
-        <Label className="text-foreground mb-4 block">Live Preview</Label>
-        <div className="bg-secondary/30 rounded-2xl p-8 min-h-[400px] flex items-center justify-center">
-          <PopupPreview
-            title={title}
-            message={message}
-            icon={icon}
-            buttonText={buttonText}
-            backgroundColor={backgroundColor}
-            textColor={textColor}
-            animation={animation}
-          />
+        {/* Live Preview */}
+        <div className="mt-8">
+          <Label className="text-sm text-[#6b6560] mb-4 block">Live Preview</Label>
+          <div className="flex justify-end">
+            <PopupPreview
+              title={title}
+              message={message}
+              imageUrl={imageUrl}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -45,67 +45,92 @@ Deno.serve(async (req) => {
 
   console.log(`Serving popup: ${popup.title}`);
 
+  const startDelay = popup.start_delay || 500;
+  const hideAfter = popup.hide_after || 200000;
+
   const script = `
 (function() {
   if (window.__poopup_${popupId.replace(/-/g, '_')}_loaded) return;
   window.__poopup_${popupId.replace(/-/g, '_')}_loaded = true;
 
   var popup = ${JSON.stringify(popup)};
+  var startDelay = ${startDelay};
+  var hideAfter = ${hideAfter};
   
-  var overlay = document.createElement('div');
-  overlay.id = 'poopup-overlay-${popupId}';
-  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s ease;';
+  function showPopup() {
+    var container = document.createElement('div');
+    container.id = 'poopup-container-${popupId}';
+    container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:999999;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);';
+    
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#f5f0e8;border-radius:16px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e5ddd0;max-width:320px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;';
+    
+    // Avatar/Image
+    var avatar = document.createElement('div');
+    avatar.style.cssText = 'width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#e5ddd0;';
+    if (popup.image_url) {
+      var img = document.createElement('img');
+      img.src = popup.image_url;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      avatar.appendChild(img);
+    } else {
+      avatar.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;">📷</div>';
+    }
+    
+    // Content
+    var content = document.createElement('div');
+    content.style.cssText = 'flex:1;min-width:0;';
+    
+    var header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;';
+    
+    var title = document.createElement('span');
+    title.style.cssText = 'font-weight:600;color:#1a1a1a;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+    title.textContent = popup.title || 'Notification';
+    
+    var time = document.createElement('span');
+    time.style.cssText = 'font-size:12px;color:#8b8680;flex-shrink:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+    time.textContent = '1m';
+    
+    header.appendChild(title);
+    header.appendChild(time);
+    
+    var message = document.createElement('p');
+    message.style.cssText = 'font-size:14px;color:#4a4a4a;margin:4px 0 0 0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+    message.textContent = popup.message || '';
+    
+    content.appendChild(header);
+    content.appendChild(message);
+    
+    card.appendChild(avatar);
+    card.appendChild(content);
+    container.appendChild(card);
+    
+    // Close on click
+    card.onclick = function() {
+      fetch('${Deno.env.get('SUPABASE_URL')}/functions/v1/popup-click?id=${popupId}', { method: 'POST' });
+      container.style.transform = 'translateX(120%)';
+      setTimeout(function() { container.remove(); }, 400);
+    };
+    
+    document.body.appendChild(container);
+    
+    // Animate in
+    setTimeout(function() {
+      container.style.transform = 'translateX(0)';
+    }, 50);
+    
+    // Auto hide
+    setTimeout(function() {
+      if (container.parentNode) {
+        container.style.transform = 'translateX(120%)';
+        setTimeout(function() { container.remove(); }, 400);
+      }
+    }, hideAfter);
+  }
   
-  var container = document.createElement('div');
-  container.style.cssText = 'background:' + popup.background_color + ';color:' + popup.text_color + ';padding:32px;border-radius:16px;max-width:400px;width:90%;text-align:center;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);transform:scale(0.9);transition:transform 0.3s ease;';
-  
-  var icon = document.createElement('div');
-  icon.style.cssText = 'font-size:48px;margin-bottom:16px;';
-  icon.textContent = popup.icon;
-  
-  var title = document.createElement('h2');
-  title.style.cssText = 'font-size:24px;font-weight:bold;margin:0 0 12px 0;';
-  title.textContent = popup.title;
-  
-  var message = document.createElement('p');
-  message.style.cssText = 'font-size:16px;margin:0 0 24px 0;opacity:0.9;';
-  message.textContent = popup.message;
-  
-  var button = document.createElement('button');
-  button.style.cssText = 'background:' + popup.text_color + ';color:' + popup.background_color + ';border:none;padding:12px 32px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:transform 0.2s ease;';
-  button.textContent = popup.button_text;
-  button.onmouseover = function() { this.style.transform = 'scale(1.05)'; };
-  button.onmouseout = function() { this.style.transform = 'scale(1)'; };
-  button.onclick = function() {
-    fetch('${Deno.env.get('SUPABASE_URL')}/functions/v1/popup-click?id=${popupId}', { method: 'POST' });
-    overlay.style.opacity = '0';
-    container.style.transform = 'scale(0.9)';
-    setTimeout(function() { overlay.remove(); }, 300);
-  };
-  
-  var close = document.createElement('button');
-  close.style.cssText = 'position:absolute;top:12px;right:12px;background:transparent;border:none;color:' + popup.text_color + ';font-size:24px;cursor:pointer;opacity:0.6;';
-  close.innerHTML = '&times;';
-  close.onclick = function() {
-    overlay.style.opacity = '0';
-    container.style.transform = 'scale(0.9)';
-    setTimeout(function() { overlay.remove(); }, 300);
-  };
-  
-  container.style.position = 'relative';
-  container.appendChild(close);
-  container.appendChild(icon);
-  container.appendChild(title);
-  container.appendChild(message);
-  container.appendChild(button);
-  overlay.appendChild(container);
-  
-  document.body.appendChild(overlay);
-  
-  setTimeout(function() {
-    overlay.style.opacity = '1';
-    container.style.transform = 'scale(1)';
-  }, 100);
+  // Start after delay
+  setTimeout(showPopup, startDelay);
 })();
 `;
 

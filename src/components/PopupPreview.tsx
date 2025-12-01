@@ -1,67 +1,47 @@
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 interface PopupPreviewProps {
   title: string;
   message: string;
-  icon: string;
-  buttonText: string;
-  backgroundColor: string;
-  textColor: string;
-  animation: string;
+  imageUrl?: string;
+  time?: string;
 }
 
 const PopupPreview = ({
   title,
   message,
-  icon,
-  buttonText,
-  backgroundColor,
-  textColor,
-  animation,
+  imageUrl,
+  time = "1m",
 }: PopupPreviewProps) => {
-  const getAnimationClass = () => {
-    switch (animation) {
-      case "bounce":
-        return "animate-bounce-soft";
-      case "shake":
-        return "animate-shake";
-      case "float":
-        return "animate-float";
-      default:
-        return "";
-    }
-  };
-
   return (
-    <div className="relative w-full max-w-sm mx-auto">
-      <div
-        className={`rounded-2xl p-6 shadow-2xl border border-border ${getAnimationClass()}`}
-        style={{ backgroundColor, color: textColor }}
-      >
-        <button className="absolute top-3 right-3 opacity-50 hover:opacity-100 transition-opacity">
-          <X className="w-5 h-5" />
-        </button>
+    <div className="animate-slide-in-right">
+      <div className="bg-[#f5f0e8] rounded-2xl p-4 shadow-lg border border-[#e5ddd0] max-w-[320px] flex items-start gap-3">
+        {/* Avatar/Logo */}
+        <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-[#e5ddd0]">
+          {imageUrl ? (
+            <img 
+              src={imageUrl} 
+              alt={title} 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-2xl">
+              📷
+            </div>
+          )}
+        </div>
 
-        <div className="text-center">
-          <div className="text-5xl mb-4">{icon}</div>
-          <h3 className="text-xl font-bold mb-2">{title || "Your Title Here"}</h3>
-          <p className="text-sm opacity-90 mb-6">
-            {message || "Your compelling message goes here..."}
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <h4 className="font-semibold text-[#1a1a1a] truncate text-sm">
+              {title || "Your Title"}
+            </h4>
+            <span className="text-xs text-[#8b8680] flex-shrink-0">{time}</span>
+          </div>
+          <p className="text-sm text-[#4a4a4a] mt-0.5 line-clamp-2">
+            {message || "Your message here..."}
           </p>
-          <Button
-            className="w-full"
-            style={{
-              backgroundColor: textColor,
-              color: backgroundColor,
-            }}
-          >
-            {buttonText || "Take Action"}
-          </Button>
         </div>
       </div>
-
-      <div className="absolute -inset-4 bg-gradient-hero opacity-20 blur-2xl rounded-3xl -z-10" />
     </div>
   );
 };
