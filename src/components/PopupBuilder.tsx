@@ -108,37 +108,37 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
     <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
       {/* Settings Panel */}
       <div className="space-y-8">
-        <div className="bg-[#faf8f5] rounded-3xl p-6 border border-[#e5ddd0]">
-          <h3 className="font-semibold text-[#1a1a1a] mb-6">Timing Settings</h3>
+        <div className="bg-card rounded-3xl p-6 border border-border">
+          <h3 className="font-semibold text-foreground mb-6">Timing Settings</h3>
           
           <div className="space-y-5">
             <div>
-              <Label className="text-sm text-[#6b6560]">Start PoopUp after (ms)</Label>
+              <Label className="text-sm text-muted-foreground">Start PoopUp after (ms)</Label>
               <Input
                 type="number"
                 value={startDelay}
                 onChange={(e) => setStartDelay(Number(e.target.value))}
-                className="mt-2 bg-white border-[#e5ddd0] rounded-xl"
+                className="mt-2 bg-background border-border rounded-xl"
               />
             </div>
 
             <div>
-              <Label className="text-sm text-[#6b6560]">Send message every (ms)</Label>
+              <Label className="text-sm text-muted-foreground">Send message every (ms)</Label>
               <Input
                 type="number"
                 value={messageInterval}
                 onChange={(e) => setMessageInterval(Number(e.target.value))}
-                className="mt-2 bg-white border-[#e5ddd0] rounded-xl"
+                className="mt-2 bg-background border-border rounded-xl"
               />
             </div>
 
             <div>
-              <Label className="text-sm text-[#6b6560]">Hide message after (ms)</Label>
+              <Label className="text-sm text-muted-foreground">Hide message after (ms)</Label>
               <Input
                 type="number"
                 value={hideAfter}
                 onChange={(e) => setHideAfter(Number(e.target.value))}
-                className="mt-2 bg-white border-[#e5ddd0] rounded-xl"
+                className="mt-2 bg-background border-border rounded-xl"
               />
             </div>
           </div>
@@ -147,26 +147,26 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
 
       {/* Message Builder */}
       <div className="space-y-6">
-        <div className="bg-[#faf8f5] rounded-3xl p-6 border border-[#e5ddd0] border-dashed">
+        <div className="bg-card rounded-3xl p-6 border border-dashed border-border">
           {/* Message Card */}
-          <div className="bg-white rounded-2xl p-4 border border-[#e5ddd0] shadow-sm">
+          <div className="bg-background rounded-2xl p-4 border border-border shadow-sm">
             <div className="flex items-start gap-3">
               {/* Drag Handle */}
-              <div className="text-[#c5c0b8] cursor-grab">
+              <div className="text-muted-foreground cursor-grab">
                 <GripVertical className="w-5 h-5" />
               </div>
 
               {/* Image Upload */}
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-14 h-14 rounded-xl bg-[#f5f0e8] border-2 border-dashed border-[#d5d0c8] flex items-center justify-center cursor-pointer hover:border-primary transition-colors flex-shrink-0"
+                className="w-14 h-14 rounded-xl bg-muted border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary transition-colors flex-shrink-0"
               >
                 {isUploading ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-[#8b8680]" />
+                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                 ) : imageUrl ? (
                   <img src={imageUrl} alt="Preview" className="w-full h-full object-cover rounded-lg" />
                 ) : (
-                  <Camera className="w-5 h-5 text-[#8b8680]" />
+                  <Camera className="w-5 h-5 text-muted-foreground" />
                 )}
               </div>
               <input
@@ -184,22 +184,22 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Angry Customer"
-                    className="border-[#e5ddd0] rounded-full bg-[#faf8f5] text-sm font-medium"
+                    className="border-border rounded-full bg-card text-sm font-medium"
                   />
-                  <span className="text-xs text-[#8b8680] flex-shrink-0 px-2">now</span>
+                  <span className="text-xs text-muted-foreground flex-shrink-0 px-2">now</span>
                 </div>
                 <Input
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="WHERE IS MY INVOICE?!"
-                  className="border-[#e5ddd0] rounded-full bg-[#faf8f5] text-sm uppercase tracking-wide"
+                  className="border-border rounded-full bg-card text-sm uppercase tracking-wide"
                 />
               </div>
             </div>
 
             {/* Delete Button */}
             <div className="flex justify-end mt-3">
-              <button className="flex items-center gap-1.5 text-sm text-[#6b6560] hover:text-red-500 transition-colors">
+              <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-destructive transition-colors">
                 <Trash2 className="w-4 h-4" />
                 Delete
               </button>
@@ -209,7 +209,7 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
           {/* Add Message Button */}
           <Button
             variant="default"
-            className="w-full mt-4 rounded-full bg-[#8b6b4a] hover:bg-[#7a5d40] text-white"
+            className="w-full mt-4 rounded-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
           >
             <Plus className="w-4 h-4 mr-2" />
             Message
@@ -220,7 +220,7 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
         <Button 
           onClick={handleSave} 
           disabled={isSaving}
-          className="w-full rounded-full bg-[#f59e0b] hover:bg-[#e89009] text-[#1a1a1a] font-semibold py-6"
+          className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-6"
         >
           {isSaving ? (
             <>
@@ -234,7 +234,7 @@ const PopupBuilder = ({ onSave, initialData, isEditing = false, isSaving = false
 
         {/* Live Preview */}
         <div className="mt-8">
-          <Label className="text-sm text-[#6b6560] mb-4 block">Live Preview</Label>
+          <Label className="text-sm text-muted-foreground mb-4 block">Live Preview</Label>
           <div className="flex justify-end">
             <PopupPreview
               title={title}
