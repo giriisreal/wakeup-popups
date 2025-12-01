@@ -9,7 +9,7 @@ const HeroSection = () => {
         <div className="text-center max-w-4xl mx-auto">
           {/* Small label */}
           <p className="text-muted-foreground mb-4 animate-slide-up">
-            PoopUp in action
+            Poppy in action
             <span className="inline-block ml-2">👆</span>
           </p>
 
@@ -49,7 +49,7 @@ const HeroSection = () => {
           <div className="mb-12 animate-slide-up" style={{ animationDelay: "0.3s" }}>
             <Link to="/create">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-full gap-2">
-                Get PoopUp
+                Get Poppy
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>

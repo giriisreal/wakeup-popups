@@ -31,7 +31,7 @@ const EmbedSnippet = ({ popupId }: EmbedSnippetProps) => {
       </p>
 
       <div className="relative">
-        <pre className="bg-secondary rounded-xl p-4 overflow-x-auto text-sm text-foreground font-mono">
+        <pre className="bg-background border border-border rounded-xl p-4 overflow-x-auto text-sm text-foreground font-mono">
           {snippet}
         </pre>
         <Button
@@ -54,7 +54,7 @@ const EmbedSnippet = ({ popupId }: EmbedSnippetProps) => {
           {["WordPress", "Shopify", "Wix", "Squarespace", "Webflow", "HTML"].map((platform) => (
             <span
               key={platform}
-              className="bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm"
+              className="bg-background border border-border text-foreground px-3 py-1 rounded-full text-sm"
             >
               {platform}
             </span>
