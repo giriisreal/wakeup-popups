@@ -27,11 +27,11 @@ const EmbedSnippet = ({ popupId }: EmbedSnippetProps) => {
     <div className="bg-card rounded-2xl p-6 border border-border">
       <h3 className="text-xl font-bold text-foreground mb-4">Your Embed Code</h3>
       <p className="text-muted-foreground mb-4">
-        Copy this code and paste it into your website's <code className="bg-secondary px-2 py-1 rounded">&lt;head&gt;</code> section.
+        Copy this code and paste it into your website's <code className="bg-muted px-2 py-1 rounded text-sm">&lt;head&gt;</code> section.
       </p>
 
       <div className="relative">
-        <pre className="bg-background border border-border rounded-xl p-4 overflow-x-auto text-sm text-foreground font-mono">
+        <pre className="bg-muted rounded-xl p-4 overflow-x-auto text-sm text-foreground font-mono break-all whitespace-pre-wrap">
           {snippet}
         </pre>
         <Button
