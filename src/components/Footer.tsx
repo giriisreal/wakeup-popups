@@ -2,22 +2,22 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-muted text-foreground py-12">
+    <footer className="bg-muted text-foreground py-8 sm:py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+          <div className="col-span-1 sm:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🎉</span>
               <span className="text-xl font-bold">Poppy</span>
             </Link>
-            <p className="opacity-80 max-w-sm">
+            <p className="opacity-80 max-w-sm text-sm sm:text-base">
               Turn your boring website visitors into paying customers with wake-up call popups that actually convert.
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Product</h4>
-            <ul className="space-y-2">
+            <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Product</h4>
+            <ul className="space-y-2 text-sm sm:text-base">
               <li>
                 <Link to="/create" className="opacity-80 hover:opacity-100 transition-opacity">
                   Create Popup
@@ -37,8 +37,8 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Support</h4>
-            <ul className="space-y-2">
+            <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Support</h4>
+            <ul className="space-y-2 text-sm sm:text-base">
               <li>
                 <Link to="/faq" className="opacity-80 hover:opacity-100 transition-opacity">
                   FAQ

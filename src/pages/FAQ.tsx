@@ -56,11 +56,11 @@ const FAQ = () => {
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-foreground mb-4">
               Frequently Asked Questions
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Got questions? We've got answers.
             </p>
           </div>
@@ -85,15 +85,15 @@ const FAQ = () => {
           </div>
 
           {/* Still have questions */}
-          <div className="mt-16 text-center">
-            <div className="bg-card rounded-3xl p-8 border border-border max-w-xl mx-auto">
-              <div className="text-5xl mb-4">💬</div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Still have questions?</h2>
-              <p className="text-muted-foreground mb-6">
+          <div className="mt-12 sm:mt-16 text-center px-4">
+            <div className="bg-card rounded-3xl p-6 sm:p-8 border border-border max-w-xl mx-auto">
+              <div className="text-4xl sm:text-5xl mb-4">💬</div>
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">Still have questions?</h2>
+              <p className="text-sm sm:text-base text-muted-foreground mb-6">
                 Can't find what you're looking for? Drop us a message and we'll get back to you.
               </p>
               <a href="mailto:iamgirikrishna@gmail.com">
-                <button className="bg-gradient-hero text-primary-foreground font-semibold px-6 py-3 rounded-xl hover:brightness-110 transition-all">
+                <button className="bg-gradient-hero text-primary-foreground font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:brightness-110 transition-all text-sm sm:text-base">
                   Contact Support
                 </button>
               </a>
