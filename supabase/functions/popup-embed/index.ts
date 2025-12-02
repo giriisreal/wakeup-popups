@@ -81,18 +81,18 @@ Deno.serve(async (req) => {
     container.style.cssText = 'position:fixed;top:' + topPos + 'px;right:20px;z-index:999999;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);';
     
     var card = document.createElement('div');
-    card.style.cssText = 'background:#f5f0e8;border-radius:16px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e5ddd0;max-width:320px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;';
+    card.style.cssText = 'background:#ffffff;border-radius:16px;padding:14px 16px;box-shadow:0 4px 24px rgba(0,0,0,0.12);max-width:320px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;';
     
     // Avatar/Image
     var avatar = document.createElement('div');
-    avatar.style.cssText = 'width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;background:#e5ddd0;';
+    avatar.style.cssText = 'width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f0f0f0;';
     if (popup.image_url) {
       var img = document.createElement('img');
       img.src = popup.image_url;
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
       avatar.appendChild(img);
     } else {
-      avatar.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;">📷</div>';
+      avatar.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;background:#e8e8e8;">📷</div>';
     }
     
     // Content
@@ -100,21 +100,21 @@ Deno.serve(async (req) => {
     content.style.cssText = 'flex:1;min-width:0;';
     
     var header = document.createElement('div');
-    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;';
+    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px;';
     
     var title = document.createElement('span');
-    title.style.cssText = 'font-weight:600;color:#1a1a1a;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+    title.style.cssText = 'font-weight:600;color:#1a1a1a;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
     title.textContent = popup.title || 'Notification';
     
     var time = document.createElement('span');
-    time.style.cssText = 'font-size:12px;color:#8b8680;flex-shrink:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
-    time.textContent = '1m';
+    time.style.cssText = 'font-size:13px;color:#999;flex-shrink:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+    time.textContent = 'now';
     
     header.appendChild(title);
     header.appendChild(time);
     
     var message = document.createElement('p');
-    message.style.cssText = 'font-size:14px;color:#4a4a4a;margin:4px 0 0 0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+    message.style.cssText = 'font-size:14px;color:#666;margin:0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
     message.textContent = popup.message || '';
     
     content.appendChild(header);
