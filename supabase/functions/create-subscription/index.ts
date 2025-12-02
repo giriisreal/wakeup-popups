@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     // Get or create Razorpay customer
     const { data: profile } = await supabase
       .from('profiles')
-      .select('email, phone, razorpay_customer_id')
+      .select('email, phone, full_name, razorpay_customer_id')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -54,8 +54,9 @@ Deno.serve(async (req) => {
 
     const basicAuth = btoa(`${razorpayKeyId}:${razorpayKeySecret}`);
 
-    // Generate a default phone if not provided (required by Razorpay)
-    const customerPhone = profile?.phone || '9999999999';
+    // Generate customer details (required by Razorpay) - contact must be a number
+    const customerName = profile?.full_name || 'Customer';
+    const customerPhone = parseInt(profile?.phone || '9999999999', 10);
 
     // Create customer if doesn't exist
     if (!customerId) {
@@ -66,6 +67,7 @@ Deno.serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          name: customerName,
           email: profile?.email,
           contact: customerPhone,
           fail_existing: '0',
@@ -91,6 +93,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         customer: {
+          name: customerName,
           email: profile?.email,
           contact: customerPhone,
         },
