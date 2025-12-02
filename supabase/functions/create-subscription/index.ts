@@ -84,63 +84,54 @@ Deno.serve(async (req) => {
         .eq('user_id', user.id);
     }
 
-    // Create subscription link (for hosted checkout page)
-    const subscriptionLinkResponse = await fetch('https://api.razorpay.com/v1/subscription_registration/auth_links', {
+    // Create subscription with hosted payment link
+    const subscriptionResponse = await fetch('https://api.razorpay.com/v1/subscriptions', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basicAuth}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        customer: {
-          name: customerName,
-          email: profile?.email,
-          contact: customerPhone,
-        },
-        type: 'link',
-        amount: 10000, // ₹100 in paise
-        currency: 'INR',
-        description: 'Happy Meal Subscription',
-        subscription_registration: {
-          plan_id: razorpayPlanId,
-          customer_notify: 1,
-          quantity: 1,
-          total_count: 12,
-        },
-        receipt: `receipt_${user.id}_${Date.now()}`,
-        expire_by: Math.floor(Date.now() / 1000) + 86400 * 7, // 7 days
-        sms_notify: 1,
-        email_notify: 1,
+        plan_id: razorpayPlanId,
+        customer_notify: 1,
+        quantity: 1,
+        total_count: 12, // 12 months
+        addons: [],
         notes: {
           user_id: user.id,
+        },
+        notify_info: {
+          notify_email: profile?.email,
         },
       }),
     });
 
-    const subscriptionLink = await subscriptionLinkResponse.json();
+    const subscription = await subscriptionResponse.json();
 
-    if (!subscriptionLinkResponse.ok) {
-      console.error('Razorpay error:', subscriptionLink);
-      throw new Error(subscriptionLink.error?.description || 'Failed to create subscription link');
+    if (!subscriptionResponse.ok) {
+      console.error('Razorpay error:', subscription);
+      throw new Error(subscription.error?.description || 'Failed to create subscription');
     }
 
-    console.log('Subscription link created:', subscriptionLink);
+    console.log('Subscription created:', subscription);
 
     // Store initial subscription record
     const { data: subRecord } = await supabase.from('subscriptions').insert({
       user_id: user.id,
       plan: 'happy_meal',
-      razorpay_subscription_id: subscriptionLink.id,
+      razorpay_subscription_id: subscription.id,
       amount: 10000,
       currency: 'INR',
-      status: 'pending',
+      status: subscription.status || 'created',
+      current_period_start: subscription.current_start ? new Date(subscription.current_start * 1000) : null,
+      current_period_end: subscription.current_end ? new Date(subscription.current_end * 1000) : null,
     }).select().single();
 
     return new Response(
       JSON.stringify({
-        subscription_id: subscriptionLink.id,
-        short_url: subscriptionLink.short_url,
-        payment_url: subscriptionLink.short_url,
+        subscription_id: subscription.id,
+        short_url: subscription.short_url,
+        payment_url: subscription.short_url,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
