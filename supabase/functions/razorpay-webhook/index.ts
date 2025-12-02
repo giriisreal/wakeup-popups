@@ -16,13 +16,21 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const razorpayKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET')!;
+    const razorpayWebhookSecret = Deno.env.get('RAZORPAY_WEBHOOK_SECRET')!;
 
     // Verify webhook signature
     const signature = req.headers.get('x-razorpay-signature');
     const body = await req.text();
 
-    const expectedSignature = createHmac('sha256', razorpayKeySecret)
+    if (!signature) {
+      console.error('No signature provided');
+      return new Response(JSON.stringify({ error: 'No signature' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401,
+      });
+    }
+
+    const expectedSignature = createHmac('sha256', razorpayWebhookSecret)
       .update(body)
       .digest('hex');
 
