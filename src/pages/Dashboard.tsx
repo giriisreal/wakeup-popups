@@ -6,9 +6,12 @@ import { Switch } from "@/components/ui/switch";
 import { Plus, Copy, Pencil, Trash2, BarChart3, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { usePopups } from "@/hooks/usePopups";
+import { useSubscription } from "@/hooks/useSubscription";
+import UpgradePrompt from "@/components/UpgradePrompt";
 
 const Dashboard = () => {
   const { popups, loading, updatePopup, deletePopup, duplicatePopup } = usePopups();
+  const { profile } = useSubscription();
 
   const toggleActive = async (id: string, currentActive: boolean) => {
     const success = await updatePopup(id, { active: !currentActive });
@@ -86,6 +89,11 @@ const Dashboard = () => {
               <div className="text-muted-foreground">Conversion Rate</div>
             </div>
           </div>
+
+          {/* Upgrade Prompt for Free Plan */}
+          {profile?.plan === 'free' && (
+            <UpgradePrompt popupCount={popups.length} popupLimit={1} />
+          )}
 
           {/* Popups List */}
           <div className="bg-card rounded-2xl border border-border overflow-hidden">

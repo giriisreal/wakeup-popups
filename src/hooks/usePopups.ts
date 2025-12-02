@@ -76,7 +76,37 @@ export const usePopups = () => {
   }, [user]);
 
   const createPopup = async (data: PopupFormData): Promise<Popup | null> => {
-    if (!user) return null;
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to create popups",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    // Check if user can create more popups based on their plan
+    const { data: canCreate, error: checkError } = await supabase
+      .rpc('can_create_popup', { user_id_param: user.id });
+
+    if (checkError) {
+      console.error('Error checking popup limit:', checkError);
+      toast({
+        title: "Error",
+        description: "Failed to check popup limit",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    if (!canCreate) {
+      toast({
+        title: "Popup limit reached",
+        description: "Upgrade to Happy Meal plan for unlimited poppys!",
+        variant: "destructive",
+      });
+      return null;
+    }
 
     try {
       const { data: newPopup, error } = await supabase
