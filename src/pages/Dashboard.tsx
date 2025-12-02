@@ -52,13 +52,13 @@ const Dashboard = () => {
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Dashboard</h1>
               <p className="text-muted-foreground">Manage your popups</p>
             </div>
-            <Link to="/create">
-              <Button variant="default" className="gap-2">
+            <Link to="/create" className="w-full sm:w-auto">
+              <Button variant="default" className="gap-2 w-full sm:w-auto">
                 <Plus className="w-4 h-4" />
                 Create New
               </Button>
@@ -118,58 +118,63 @@ const Dashboard = () => {
             ) : (
               <div className="divide-y divide-border">
                 {popups.map((popup) => (
-                  <div key={popup.id} className="p-6 flex items-center justify-between hover:bg-secondary/30 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-2xl">
-                        {popup.icon}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-foreground">
-                          {popup.title || "Untitled Popup"}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <BarChart3 className="w-3 h-3" />
-                            {popup.views} views
-                          </span>
-                          <span>{popup.clicks} clicks</span>
+                  <div key={popup.id} className="p-4 sm:p-6 hover:bg-secondary/30 transition-colors">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      {/* Icon and Title */}
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-2xl flex-shrink-0">
+                          {popup.icon}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-foreground truncate">
+                            {popup.title || "Untitled Popup"}
+                          </h3>
+                          <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <BarChart3 className="w-3 h-3" />
+                              {popup.views} views
+                            </span>
+                            <span>{popup.clicks} clicks</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">
-                          {popup.active ? "Active" : "Inactive"}
-                        </span>
-                        <Switch
-                          checked={popup.active}
-                          onCheckedChange={() => toggleActive(popup.id, popup.active)}
-                        />
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDuplicate(popup)}
-                          title="Duplicate"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                        <Link to={`/create?edit=${popup.id}`}>
-                          <Button variant="ghost" size="icon" title="Edit">
-                            <Pencil className="w-4 h-4" />
+                      {/* Actions */}
+                      <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs sm:text-sm text-muted-foreground">
+                            {popup.active ? "Active" : "Inactive"}
+                          </span>
+                          <Switch
+                            checked={popup.active}
+                            onCheckedChange={() => toggleActive(popup.id, popup.active)}
+                          />
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDuplicate(popup)}
+                            title="Duplicate"
+                            className="h-8 w-8 sm:h-10 sm:w-10"
+                          >
+                            <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
                           </Button>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(popup.id)}
-                          title="Delete"
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                          <Link to={`/create?edit=${popup.id}`}>
+                            <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 sm:h-10 sm:w-10">
+                              <Pencil className="w-3 h-3 sm:w-4 sm:h-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(popup.id)}
+                            title="Delete"
+                            className="text-destructive hover:text-destructive h-8 w-8 sm:h-10 sm:w-10"
+                          >
+                            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
