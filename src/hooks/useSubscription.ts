@@ -19,6 +19,10 @@ export const useSubscription = () => {
   useEffect(() => {
     if (user) {
       fetchProfile();
+      
+      // Auto-refresh every 5 seconds to check for subscription updates
+      const interval = setInterval(fetchProfile, 5000);
+      return () => clearInterval(interval);
     } else {
       setProfile(null);
       setLoading(false);
