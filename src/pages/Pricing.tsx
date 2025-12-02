@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
+import WebhookSetupGuide from "@/components/WebhookSetupGuide";
 
 const Pricing = () => {
   const { createSubscription, profile } = useSubscription();
@@ -24,6 +25,11 @@ const Pricing = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Choose the plan that works for you
             </p>
+          </div>
+
+          {/* Webhook Setup Guide */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <WebhookSetupGuide />
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
