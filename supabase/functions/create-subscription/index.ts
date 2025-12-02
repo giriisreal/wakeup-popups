@@ -42,9 +42,9 @@ Deno.serve(async (req) => {
     // Get or create Razorpay customer
     const { data: profile } = await supabase
       .from('profiles')
-      .select('email, razorpay_customer_id')
+      .select('email, phone, razorpay_customer_id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     let customerId = profile?.razorpay_customer_id;
 
@@ -53,6 +53,9 @@ Deno.serve(async (req) => {
     const razorpayPlanId = 'plan_RmfUMPdC7G4Yjv'; // ₹100/month plan
 
     const basicAuth = btoa(`${razorpayKeyId}:${razorpayKeySecret}`);
+
+    // Generate a default phone if not provided (required by Razorpay)
+    const customerPhone = profile?.phone || '9999999999';
 
     // Create customer if doesn't exist
     if (!customerId) {
@@ -64,6 +67,7 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           email: profile?.email,
+          contact: customerPhone,
           fail_existing: '0',
         }),
       });
@@ -88,6 +92,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         customer: {
           email: profile?.email,
+          contact: customerPhone,
         },
         type: 'link',
         amount: 10000, // ₹100 in paise
