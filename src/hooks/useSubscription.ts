@@ -54,28 +54,33 @@ export const useSubscription = () => {
     }
 
     try {
+      toast({
+        title: "Creating subscription...",
+        description: "Please wait while we set up your payment",
+      });
+
       const { data, error } = await supabase.functions.invoke('create-subscription', {
         body: { plan: 'happy_meal' },
       });
 
       if (error) throw error;
 
-      // Open Razorpay payment page
+      // Open Razorpay payment page in new tab
       if (data.short_url) {
         window.open(data.short_url, '_blank');
+        
+        toast({
+          title: "Payment page opened",
+          description: "Complete the payment to activate your Happy Meal plan. You may need to allow popups.",
+        });
       }
-
-      toast({
-        title: "Subscription initiated",
-        description: "Complete the payment to activate your Happy Meal plan",
-      });
 
       return data;
     } catch (error) {
       console.error('Error creating subscription:', error);
       toast({
         title: "Error",
-        description: "Failed to create subscription",
+        description: "Failed to create subscription. Please try again.",
         variant: "destructive",
       });
       return null;
