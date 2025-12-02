@@ -42,12 +42,18 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main>
-        <HeroSection />
-        <HowItWorks />
-        <PricingPreview />
+        <section id="home">
+          <HeroSection />
+        </section>
+        <section id="how-it-works">
+          <HowItWorks />
+        </section>
+        <section id="pricing">
+          <PricingPreview />
+        </section>
         
         {/* FAQ Section */}
-        <section className="py-16 sm:py-24 bg-background">
+        <section id="faq" className="py-16 sm:py-24 bg-background">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-4">
