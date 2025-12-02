@@ -81,23 +81,34 @@ Deno.serve(async (req) => {
     container.style.cssText = 'position:fixed;top:' + topPos + 'px;right:20px;z-index:999999;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);';
     
     var card = document.createElement('div');
-    card.style.cssText = 'background:#ffffff;border-radius:16px;padding:14px 16px;box-shadow:0 4px 24px rgba(0,0,0,0.12);max-width:320px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;';
+    card.style.cssText = 'background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;padding:14px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);border:1px solid rgba(255,255,255,0.3);max-width:320px;display:flex;align-items:flex-start;gap:12px;position:relative;';
+    
+    // Close button
+    var closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.cssText = 'position:absolute;top:8px;right:8px;width:20px;height:20px;border:none;background:rgba(0,0,0,0.08);border-radius:50%;cursor:pointer;font-size:16px;line-height:1;color:#666;display:flex;align-items:center;justify-content:center;transition:background 0.2s;';
+    closeBtn.onmouseover = function() { closeBtn.style.background = 'rgba(0,0,0,0.15)'; };
+    closeBtn.onmouseout = function() { closeBtn.style.background = 'rgba(0,0,0,0.08)'; };
+    closeBtn.onclick = function(e) {
+      e.stopPropagation();
+      hidePopup();
+    };
     
     // Avatar/Image
     var avatar = document.createElement('div');
-    avatar.style.cssText = 'width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f0f0f0;';
+    avatar.style.cssText = 'width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;background:rgba(240,240,240,0.8);';
     if (popup.image_url) {
       var img = document.createElement('img');
       img.src = popup.image_url;
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
       avatar.appendChild(img);
     } else {
-      avatar.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;background:#e8e8e8;">📷</div>';
+      avatar.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(232,232,232,0.8);">📷</div>';
     }
     
     // Content
     var content = document.createElement('div');
-    content.style.cssText = 'flex:1;min-width:0;';
+    content.style.cssText = 'flex:1;min-width:0;padding-right:16px;cursor:pointer;';
     
     var header = document.createElement('div');
     header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px;';
@@ -120,6 +131,7 @@ Deno.serve(async (req) => {
     content.appendChild(header);
     content.appendChild(message);
     
+    card.appendChild(closeBtn);
     card.appendChild(avatar);
     card.appendChild(content);
     container.appendChild(card);
@@ -132,8 +144,8 @@ Deno.serve(async (req) => {
       }, 400);
     }
     
-    // Close on click
-    card.onclick = function() {
+    // Track click on content (not close button)
+    content.onclick = function() {
       fetch('${Deno.env.get('SUPABASE_URL')}/functions/v1/popup-click?id=${popupId}', { method: 'POST' });
       hidePopup();
     };
