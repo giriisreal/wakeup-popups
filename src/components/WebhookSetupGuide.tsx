@@ -1,15 +1,25 @@
-import { AlertCircle, Copy, ExternalLink } from "lucide-react";
+import { AlertCircle, Copy, ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const WebhookSetupGuide = () => {
   const webhookUrl = "https://prwxjgtesrmjvuhegyte.supabase.co/functions/v1/razorpay-webhook";
+  const { refetch, profile } = useSubscription();
 
   const copyWebhookUrl = () => {
     navigator.clipboard.writeText(webhookUrl);
     toast({
       title: "Copied!",
       description: "Webhook URL copied to clipboard",
+    });
+  };
+
+  const handleRefresh = async () => {
+    await refetch();
+    toast({
+      title: "Refreshed",
+      description: "Subscription status updated",
     });
   };
 
@@ -44,6 +54,12 @@ const WebhookSetupGuide = () => {
               <ExternalLink className="w-4 h-4" />
               Open Razorpay Dashboard
             </Button>
+            {profile?.plan === 'free' && (
+              <Button onClick={handleRefresh} size="sm" variant="secondary" className="gap-2">
+                <RefreshCw className="w-4 h-4" />
+                Check Status
+              </Button>
+            )}
           </div>
 
           <div className="space-y-2 text-sm text-muted-foreground">
