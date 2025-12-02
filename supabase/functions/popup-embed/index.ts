@@ -60,13 +60,25 @@ Deno.serve(async (req) => {
   var messageInterval = ${messageInterval};
   var isVisible = false;
   
+  function getTopPosition() {
+    var existingPopups = document.querySelectorAll('[id^="poopup-container-"]');
+    var totalHeight = 20;
+    for (var i = 0; i < existingPopups.length; i++) {
+      if (existingPopups[i].style.transform === 'translateX(0px)') {
+        totalHeight += existingPopups[i].offsetHeight + 12;
+      }
+    }
+    return totalHeight;
+  }
+  
   function showPopup() {
     if (isVisible) return;
     isVisible = true;
     
+    var topPos = getTopPosition();
     var container = document.createElement('div');
     container.id = 'poopup-container-${popupId}';
-    container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:999999;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);';
+    container.style.cssText = 'position:fixed;top:' + topPos + 'px;right:20px;z-index:999999;transform:translateX(120%);transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);';
     
     var card = document.createElement('div');
     card.style.cssText = 'background:#f5f0e8;border-radius:16px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,0.15);border:1px solid #e5ddd0;max-width:320px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;';
