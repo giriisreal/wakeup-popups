@@ -39,6 +39,44 @@ Deno.serve(async (req) => {
 
     const { event: eventType, payload } = event;
 
+    // Handle subscription authenticated (payment successful for subscription link)
+    if (eventType === 'subscription.authenticated') {
+      const subscriptionId = payload.subscription.entity.id;
+      const userId = payload.subscription.entity.notes?.user_id;
+
+      if (!userId) {
+        console.error('No user_id in subscription notes');
+        return new Response(JSON.stringify({ error: 'No user_id' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        });
+      }
+
+      // Update profile to happy_meal plan
+      await supabase
+        .from('profiles')
+        .update({
+          plan: 'happy_meal',
+          razorpay_subscription_id: subscriptionId,
+          subscription_status: 'active',
+          subscription_end_date: new Date(payload.subscription.entity.end_at * 1000),
+        })
+        .eq('user_id', userId);
+
+      // Update subscription record
+      await supabase
+        .from('subscriptions')
+        .update({
+          status: 'active',
+          razorpay_payment_id: payload.payment?.entity?.id,
+          current_period_start: new Date(payload.subscription.entity.current_start * 1000),
+          current_period_end: new Date(payload.subscription.entity.current_end * 1000),
+        })
+        .eq('razorpay_subscription_id', subscriptionId);
+
+      console.log(`Subscription authenticated for user: ${userId}`);
+    }
+
     // Handle subscription activated/charged
     if (eventType === 'subscription.activated' || eventType === 'subscription.charged') {
       const subscriptionId = payload.subscription.entity.id;

@@ -78,45 +78,61 @@ Deno.serve(async (req) => {
         .eq('user_id', user.id);
     }
 
-    // Create subscription
-    const subscriptionResponse = await fetch('https://api.razorpay.com/v1/subscriptions', {
+    // Create subscription link (for hosted checkout page)
+    const subscriptionLinkResponse = await fetch('https://api.razorpay.com/v1/subscription_registration/auth_links', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${basicAuth}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        plan_id: razorpayPlanId,
-        customer_id: customerId,
-        total_count: 12, // 12 months
-        quantity: 1,
-        customer_notify: 1,
+        customer: {
+          email: profile?.email,
+        },
+        type: 'link',
+        amount: 10000, // ₹100 in paise
+        currency: 'INR',
+        description: 'Happy Meal Subscription',
+        subscription_registration: {
+          plan_id: razorpayPlanId,
+          customer_notify: 1,
+          quantity: 1,
+          total_count: 12,
+        },
+        receipt: `receipt_${user.id}_${Date.now()}`,
+        expire_by: Math.floor(Date.now() / 1000) + 86400 * 7, // 7 days
+        sms_notify: 1,
+        email_notify: 1,
         notes: {
           user_id: user.id,
         },
       }),
     });
 
-    const subscription = await subscriptionResponse.json();
+    const subscriptionLink = await subscriptionLinkResponse.json();
 
-    console.log('Subscription created:', subscription);
+    if (!subscriptionLinkResponse.ok) {
+      console.error('Razorpay error:', subscriptionLink);
+      throw new Error(subscriptionLink.error?.description || 'Failed to create subscription link');
+    }
 
-    // Store subscription in database
-    await supabase.from('subscriptions').insert({
+    console.log('Subscription link created:', subscriptionLink);
+
+    // Store initial subscription record
+    const { data: subRecord } = await supabase.from('subscriptions').insert({
       user_id: user.id,
       plan: 'happy_meal',
-      razorpay_subscription_id: subscription.id,
-      amount: 10000, // ₹100 in paise
+      razorpay_subscription_id: subscriptionLink.id,
+      amount: 10000,
       currency: 'INR',
-      status: subscription.status,
-      current_period_start: new Date(subscription.start_at * 1000),
-      current_period_end: new Date(subscription.end_at * 1000),
-    });
+      status: 'pending',
+    }).select().single();
 
     return new Response(
       JSON.stringify({
-        subscription_id: subscription.id,
-        short_url: subscription.short_url,
+        subscription_id: subscriptionLink.id,
+        short_url: subscriptionLink.short_url,
+        payment_url: subscriptionLink.short_url,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
