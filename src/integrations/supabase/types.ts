@@ -86,6 +86,11 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          razorpay_customer_id: string | null
+          razorpay_subscription_id: string | null
+          subscription_end_date: string | null
+          subscription_status: string | null
           updated_at: string
           user_id: string
         }
@@ -94,6 +99,11 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          razorpay_customer_id?: string | null
+          razorpay_subscription_id?: string | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id: string
         }
@@ -102,6 +112,56 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          razorpay_customer_id?: string | null
+          razorpay_subscription_id?: string | null
+          subscription_end_date?: string | null
+          subscription_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          razorpay_payment_id: string | null
+          razorpay_subscription_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          razorpay_payment_id?: string | null
+          razorpay_subscription_id: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          razorpay_payment_id?: string | null
+          razorpay_subscription_id?: string
+          status?: string
           updated_at?: string
           user_id?: string
         }
@@ -112,10 +172,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_create_popup: { Args: { user_id_param: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      subscription_plan: "free" | "happy_meal"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -242,6 +302,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      subscription_plan: ["free", "happy_meal"],
+    },
   },
 } as const
