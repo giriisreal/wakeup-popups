@@ -26,12 +26,6 @@ const Navbar = () => {
             <span className="text-xl font-bold text-foreground">Poppy</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
-              FAQ
-            </Link>
-          </div>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
@@ -82,9 +76,6 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-background border-t border-border">
             <div className="container mx-auto px-4 py-4 space-y-3">
-              <Link to="/faq" className="block py-2 text-muted-foreground hover:text-foreground transition-colors font-medium">
-                FAQ
-              </Link>
               {user ? (
                 <>
                   <Link to="/dashboard" className="block">
