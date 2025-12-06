@@ -33,10 +33,6 @@ const faqs = [
     answer: "Yes! You can customize the colors, text, icons, buttons, and animations. We've made it super easy to match your brand while keeping that attention-grabbing impact.",
   },
   {
-    question: "What's the difference between Appetizer and Main Course?",
-    answer: "Appetizer gives you up to 3 popups with basic analytics - perfect for testing the waters. Main Course gives you unlimited popups, advanced analytics, A/B testing, custom animations, and priority support - ideal for serious conversion optimization.",
-  },
-  {
     question: "Is there a free trial?",
     answer: "We don't offer a free trial, but we do have a 30-day money-back guarantee. If you're not happy with Poppy for any reason, just reach out and we'll refund you - no questions asked.",
   },
